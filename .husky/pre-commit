@@ -1,4 +1,8 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-cd lesjeunes-frontend && npx lint-staged
+## Run lint-staged from frontend
+npx --prefix lesjeunes-frontend lint-staged
+
+## Run lint-staged from backend
+npx --prefix lesjeunes-backend lint-staged
