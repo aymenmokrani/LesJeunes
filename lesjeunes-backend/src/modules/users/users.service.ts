@@ -7,6 +7,7 @@ import {
 import { UserRepository } from './users.repository';
 import { CreateUserDto, UpdateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -24,7 +25,17 @@ export class UsersService {
       throw new ConflictException('Email already exists'); // Error handling
     }
 
-    return this.userRepository.create(createUserDto);
+    // Hash password before saving
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(
+      createUserDto.password,
+      saltRounds,
+    );
+
+    return this.userRepository.create({
+      ...createUserDto,
+      password: hashedPassword,
+    });
   }
 
   // Business logic: Get all active users
@@ -53,5 +64,26 @@ export class UsersService {
     // Ensure user exists before deleting
     await this.findOne(id); // Reuse existing validation
     await this.userRepository.softDelete(id);
+  }
+
+  // Business logic: Update user storage usage
+  async updateStorageUsage(userId: number, sizeChange: number): Promise<void> {
+    const user = await this.findOne(userId);
+    const newStorageUsed = user.storageUsed + sizeChange;
+
+    if (newStorageUsed < 0) {
+      throw new Error('Storage usage cannot be negative');
+    }
+
+    await this.userRepository.update(userId, { storageUsed: newStorageUsed });
+  }
+
+  // Business logic: Check if user has enough storage space
+  async checkStorageSpace(
+    userId: number,
+    requiredSpace: number,
+  ): Promise<boolean> {
+    const user = await this.findOne(userId);
+    return user.hasStorageSpace(requiredSpace);
   }
 }
