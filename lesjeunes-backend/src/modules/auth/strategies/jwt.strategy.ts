@@ -11,8 +11,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
-          console.log('All cookies:', request?.cookies);
-          console.log('Access token cookie:', request?.cookies?.access_token);
           return request?.cookies?.access_token;
         },
       ]),
@@ -26,9 +24,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: any) {
     // 'payload' is the decoded JWT content
     // Example payload: { sub: 123, email: "user@example.com", iat: 1234567890 }
-
-    console.log('JWT Payload:', payload); // { sub: 123, email: "user@example.com" }
-
     const user = await this.usersService.findOne(payload.sub);
 
     // Find user in a database to ensure they still exist

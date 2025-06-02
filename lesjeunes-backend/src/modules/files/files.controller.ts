@@ -29,7 +29,7 @@ export class FilesController {
   @Get()
   async getUserFiles(
     @Request() req,
-    @Query('folderId', ParseIntPipe) folderId?: number,
+    @Query('folderId', new ParseIntPipe({ optional: true })) folderId?: number,
   ) {
     return this.filesService.getUserFiles(req.user, folderId);
   }
@@ -79,7 +79,7 @@ export class FilesController {
   @Get('folders')
   async getUserFolders(
     @Request() req,
-    @Query('parentId', ParseIntPipe) parentId?: number,
+    @Query('parentId', new ParseIntPipe({ optional: true })) parentId?: number,
   ) {
     return this.filesService.getUserFolders(req.user, parentId);
   }

@@ -127,7 +127,7 @@ export class StorageService {
 
   // Helper method to generate unique IDs
   private generateUniqueId(): string {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+    return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
   }
 
   // Health check method
