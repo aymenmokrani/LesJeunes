@@ -15,7 +15,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { FilesService } from './files.service';
-import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
 import { CreateFolderDto, UpdateFolderDto } from './dto/create-folder.dto';
 import { UpdateFileDto } from './dto/upload-file.dto';
 import { MoveFileDto } from './dto/move-file.dto';

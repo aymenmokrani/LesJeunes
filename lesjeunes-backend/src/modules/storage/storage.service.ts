@@ -1,7 +1,7 @@
 // storage/storage.service.ts - Storage Orchestration Service
 import { Injectable, Logger } from '@nestjs/common';
-import { StorageProvider } from './interfaces/storage.interface';
-import { LocalStorageService } from './providers/local-storage.service';
+import { StorageProvider } from '@/modules/storage/interfaces/storage.interface';
+import { LocalStorageService } from '@/modules/storage/providers/local-storage.service';
 
 @Injectable()
 export class StorageService {

@@ -16,7 +16,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { UploadService } from './upload.service';
-import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
 import {
   FileUploadInterceptor,
   MultipleFilesUploadInterceptor,
@@ -27,7 +27,7 @@ import {
   ImageValidationInterceptor,
   DocumentValidationInterceptor,
 } from './interceptors/file-validation.interceptor';
-import { UploadFileDto } from '@/files/dto/upload-file.dto';
+import { UploadFileDto } from '@/modules/files/dto/upload-file.dto';
 
 @Controller('upload')
 @UseGuards(JwtAuthGuard) // Protect all upload endpoints

@@ -1,11 +1,11 @@
 // upload/upload.service.ts - Upload Processing Logic
 import { Injectable, BadRequestException, Logger } from '@nestjs/common';
-import { StorageService } from '@/storage/storage.service';
-import { FilesService } from '@/files/files.service';
+import { StorageService } from '@/modules/storage/storage.service';
+import { FilesService } from '@/modules/files/files.service';
 import { UsersService } from '@/modules/users/users.service';
 import { User } from '@/modules/users/entities/user.entity';
-import { File } from '@/files/entities/file.entity';
-import { UploadFileDto } from '@/files/dto/upload-file.dto';
+import { File } from '@/modules/files/entities/file.entity';
+import { UploadFileDto } from '@/modules/files/dto/upload-file.dto';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';

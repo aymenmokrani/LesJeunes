@@ -5,10 +5,10 @@ import { databaseConfig } from './config/database.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from '@/modules/users/users.module';
-import { FilesModule } from '@/files/files.module';
-import { StorageModule } from '@/storage/storage.module';
-import { UploadModule } from '@/upload/upload.module';
-import { AuthModule } from '@/auth/auth.module';
+import { FilesModule } from '@/modules/files/files.module';
+import { StorageModule } from '@/modules/storage/storage.module';
+import { UploadModule } from '@/modules/upload/upload.module';
+import { AuthModule } from '@/modules/auth/auth.module';
 
 @Module({
   imports: [

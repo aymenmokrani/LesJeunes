@@ -7,8 +7,8 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { File } from '@/files/entities/file.entity';
-import { Folder } from '@/files/entities/folder.entity';
+import { File } from '@/modules/files/entities/file.entity';
+import { Folder } from '@/modules/files/entities/folder.entity';
 
 @Entity('users')
 export class User {

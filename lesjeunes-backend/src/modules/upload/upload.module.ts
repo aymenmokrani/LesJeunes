@@ -8,8 +8,8 @@ import {
   ImageValidationInterceptor,
   DocumentValidationInterceptor,
 } from './interceptors/file-validation.interceptor';
-import { StorageModule } from '@/storage/storage.module';
-import { FilesModule } from '@/files/files.module';
+import { StorageModule } from '@/modules/storage/storage.module';
+import { FilesModule } from '@/modules/files/files.module';
 import { UsersModule } from '@/modules/users/users.module';
 import * as fs from 'fs';
 

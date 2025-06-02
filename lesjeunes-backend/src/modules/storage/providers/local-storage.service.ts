@@ -1,6 +1,6 @@
 // storage/providers/local-storage.service.ts - Local Disk Storage Implementation
 import { Injectable, Logger } from '@nestjs/common';
-import { StorageProvider } from '../interfaces/storage.interface';
+import { StorageProvider } from '@/modules/storage/interfaces/storage.interface';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { existsSync } from 'fs';

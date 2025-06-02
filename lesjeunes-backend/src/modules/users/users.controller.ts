@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto } from './dto/create-user.dto';
-import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard'; // Security guard
+import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard'; // Security guard
 
 @Controller('users')
 @UseGuards(JwtAuthGuard) // Security: Protect all routes with JWT
