@@ -27,6 +27,10 @@ export class User {
   @Column({ default: true })
   isActive: boolean;
 
+  // Auth-related fields
+  @Column('text', { array: true, default: [] })
+  refreshTokens: string[]; // Store refresh tokens
+
   // Storage settings
   @Column({ type: 'bigint', default: 5368709120 }) // 5GB default
   storageQuota: number; // Storage limit in bytes
