@@ -11,6 +11,7 @@ import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { User } from '@/modules/users/entities/user.entity';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -32,7 +33,7 @@ export class AuthService {
     return null;
   }
 
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDto, response: Response) {
     const user = await this.validateUser(loginDto.email, loginDto.password);
 
     if (!user) {
@@ -49,9 +50,10 @@ export class AuthService {
     // Store refresh token in database
     await this.storeRefreshToken(user.id, refreshToken);
 
+    // Set cookies
+    this.setCookies(response, accessToken, refreshToken);
+
     return {
-      access_token: accessToken,
-      refresh_token: refreshToken,
       user: {
         id: user.id,
         email: user.email,
@@ -59,7 +61,7 @@ export class AuthService {
     };
   }
 
-  async register(registerDto: RegisterDto) {
+  async register(registerDto: RegisterDto, response: Response) {
     // Check if user already exists
     const existingUser = await this.userRepository.findOne({
       where: { email: registerDto.email },
@@ -92,9 +94,10 @@ export class AuthService {
     // Store refresh token
     await this.storeRefreshToken(savedUser.id, refreshToken);
 
+    // Set cookies
+    this.setCookies(response, accessToken, refreshToken);
+
     return {
-      access_token: accessToken,
-      refresh_token: refreshToken,
       user: {
         id: savedUser.id,
         email: savedUser.email,
@@ -103,7 +106,7 @@ export class AuthService {
     };
   }
 
-  async refreshToken(refreshToken: string) {
+  async refreshToken(refreshToken: string, response: Response) {
     try {
       const payload = this.jwtService.verify(refreshToken, {
         secret: this.configService.get('JWT_REFRESH_SECRET'),
@@ -128,23 +131,24 @@ export class AuthService {
       // Replace old refresh token with new one
       await this.replaceRefreshToken(user.id, refreshToken, newRefreshToken);
 
+      // Set new cookies
+      this.setCookies(response, newAccessToken, newRefreshToken);
+
       return {
-        access_token: newAccessToken,
-        refresh_token: newRefreshToken,
+        message: 'Tokens refreshed successfully',
       };
     } catch {
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
   }
 
-  async logout(userId: number, refreshToken?: string) {
-    if (refreshToken) {
-      // Remove specific refresh token
-      await this.removeRefreshToken(userId, refreshToken);
-    } else {
-      // Remove all refresh tokens for the user
-      await this.removeAllRefreshTokens(userId);
-    }
+  async logout(userId: number, response: Response) {
+    // Remove all refresh tokens for the user
+    await this.removeAllRefreshTokens(userId);
+
+    // Clear cookies
+    response.clearCookie('access_token');
+    response.clearCookie('refresh_token');
 
     return { message: 'Logged out successfully' };
   }
@@ -154,28 +158,20 @@ export class AuthService {
     userId: number,
     refreshToken: string,
   ): Promise<void> {
-    await this.userRepository
-      .createQueryBuilder()
-      .update(User)
-      .set({
-        refreshTokens: () => `array_append(refresh_tokens, '${refreshToken}')`,
-      })
-      .where('id = :id', { id: userId })
-      .execute();
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    user.refreshTokens.push(refreshToken);
+    await this.userRepository.save(user);
   }
 
   private async removeRefreshToken(
     userId: number,
     refreshToken: string,
   ): Promise<void> {
-    await this.userRepository
-      .createQueryBuilder()
-      .update(User)
-      .set({
-        refreshTokens: () => `array_remove(refresh_tokens, '${refreshToken}')`,
-      })
-      .where('id = :id', { id: userId })
-      .execute();
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    user.refreshTokens = user.refreshTokens.filter(
+      (token) => token !== refreshToken,
+    );
+    await this.userRepository.save(user);
   }
 
   private async removeAllRefreshTokens(userId: number): Promise<void> {
@@ -189,5 +185,25 @@ export class AuthService {
   ): Promise<void> {
     await this.removeRefreshToken(userId, oldToken);
     await this.storeRefreshToken(userId, newToken);
+  }
+
+  private setCookies(
+    response: Response,
+    accessToken: string,
+    refreshToken: string,
+  ) {
+    response.cookie('access_token', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 15 * 60 * 1000, // 15 minutes
+    });
+
+    response.cookie('refresh_token', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
   }
 }
