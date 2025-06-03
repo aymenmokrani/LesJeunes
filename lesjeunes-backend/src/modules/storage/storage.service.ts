@@ -1,16 +1,12 @@
 // storage/storage.service.ts - Storage Orchestration Service
 import { Injectable, Logger } from '@nestjs/common';
 import { StorageProvider } from '@/modules/storage/interfaces/storage.interface';
-import { LocalStorageService } from '@/modules/storage/providers/local-storage.service';
 
 @Injectable()
 export class StorageService {
   private readonly logger = new Logger(StorageService.name);
-  private readonly provider: StorageProvider;
 
-  constructor(private readonly localStorageService: LocalStorageService) {
-    // Choose storage provider based on environment configuration
-    this.provider = this.getStorageProvider();
+  constructor(private readonly provider: StorageProvider) {
     this.logger.log(
       `Using storage provider: ${this.provider.constructor.name}`,
     );
@@ -100,17 +96,6 @@ export class StorageService {
     );
 
     await Promise.all(deletePromises);
-  }
-
-  // Storage provider selection logic
-  private getStorageProvider(): StorageProvider {
-    const storageType = process.env.STORAGE_TYPE || 'local';
-
-    switch (storageType.toLowerCase()) {
-      case 'local':
-      default:
-        return this.localStorageService;
-    }
   }
 
   // Get current storage provider info
