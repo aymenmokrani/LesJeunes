@@ -9,7 +9,6 @@ export const databaseConfig = (): TypeOrmModuleOptions => ({
   database: process.env.POSTGRES_DB || 'lesjeunes_dev',
   entities: [__dirname + '/../**/*.entity{.ts,.js}'], // ← Auto-load entities
   synchronize: true,
-  dropSchema: true,
   logging: process.env.NODE_ENV === 'development',
   retryAttempts: 3, // ← Retry connection 3 times
   retryDelay: 3000, // ← Wait 3 seconds between retries

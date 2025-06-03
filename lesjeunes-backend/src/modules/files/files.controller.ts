@@ -13,12 +13,14 @@ import {
   ParseIntPipe,
   HttpCode,
   HttpStatus,
+  Res,
 } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
 import { CreateFolderDto, UpdateFolderDto } from './dto/create-folder.dto';
 import { UpdateFileDto } from './dto/upload-file.dto';
 import { MoveFileDto } from './dto/move-file.dto';
+import { Response } from 'express';
 
 @Controller('files')
 @UseGuards(JwtAuthGuard) // Protect all routes with authentication
@@ -40,9 +42,27 @@ export class FilesController {
   }
 
   @Get(':id/download')
-  async downloadFile(@Param('id', ParseIntPipe) id: number, @Request() req) {
+  async downloadFile(
+    @Param('id', ParseIntPipe) id: number,
+    @Request() req,
+    @Res() res: Response,
+  ) {
     // This returns file metadata, actual download logic would be in upload module
-    return this.filesService.downloadFile(id, req.user);
+    const { file, content } = await this.filesService.downloadFile(
+      id,
+      req.user,
+    );
+
+    // Set proper download headers
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${file.originalName}"`,
+    );
+    res.setHeader('Content-Type', file.mimeType);
+    res.setHeader('Content-Length', file.size);
+
+    // Send the actual file content
+    res.send(content);
   }
 
   @Put(':id')

@@ -3,6 +3,8 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Logger,
+  ForbiddenException,
 } from '@nestjs/common';
 import { FilesRepository } from './files.repository';
 import { File } from './entities/file.entity';
@@ -11,10 +13,16 @@ import { User } from '@/modules/users/entities/user.entity';
 import { CreateFolderDto, UpdateFolderDto } from './dto/create-folder.dto';
 import { UpdateFileDto } from './dto/upload-file.dto';
 import { MoveFileDto } from './dto/move-file.dto';
+import { StorageService } from '@/modules/storage/storage.service';
 
 @Injectable()
 export class FilesService {
-  constructor(private readonly filesRepository: FilesRepository) {}
+  private readonly logger = new Logger(FilesService.name);
+
+  constructor(
+    private readonly filesRepository: FilesRepository,
+    private readonly storageService: StorageService,
+  ) {}
 
   // File operations
   async createFileRecord(fileData: Partial<File>, user: User): Promise<File> {
@@ -132,13 +140,58 @@ export class FilesService {
     return updatedFile;
   }
 
-  async downloadFile(id: number, user: User): Promise<File> {
-    const file = await this.getFileById(id, user);
+  async downloadFile(
+    id: number,
+    user: User,
+  ): Promise<{
+    file: File;
+    content: Buffer;
+  }> {
+    try {
+      // Get file info from database with ownership validation
+      const file = await this.getFileById(id, user);
 
-    // Increment download count
-    await this.filesRepository.incrementDownloadCount(id);
+      // Security: Check file visibility permissions
+      if (file.visibility === 'private' && file.owner.id !== user.id) {
+        throw new ForbiddenException('Access denied to this file');
+      }
 
-    return file;
+      // Validate file still exists in storage
+      const fileExists = await this.storageService.fileExists(file.storagePath);
+      if (!fileExists) {
+        this.logger.error(`File not found in storage: ${file.storagePath}`);
+        throw new NotFoundException('File content not found in storage');
+      }
+
+      // Get actual file content from storage
+      const content = await this.storageService.downloadFile(file.storagePath);
+
+      // Validate content size matches database record
+      if (content.length !== Number(file.size)) {
+        this.logger.warn(
+          `File size mismatch for ${file.id}: expected ${file.size}, got ${content.length}`,
+        );
+        throw new BadRequestException('File integrity check failed');
+      }
+
+      // Increment download count (async, don't wait)
+      this.filesRepository.incrementDownloadCount(id).catch((error) => {
+        this.logger.warn(
+          `Failed to increment download count for file ${id}:`,
+          error,
+        );
+      });
+
+      this.logger.log(`File downloaded: ${file.id} by user ${user.id}`);
+
+      return { file, content };
+    } catch (error) {
+      this.logger.error(
+        `Download failed for file ${id} by user ${user.id}:`,
+        error,
+      );
+      throw error;
+    }
   }
 
   // Folder operations
