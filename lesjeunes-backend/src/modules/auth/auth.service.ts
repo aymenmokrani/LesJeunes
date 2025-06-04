@@ -2,6 +2,7 @@ import {
   Injectable,
   UnauthorizedException,
   ConflictException,
+  NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -12,25 +13,32 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { User } from '@/modules/users/entities/user.entity';
 import { Response } from 'express';
+import { UsersService } from '@/modules/users/users.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly usersService: UsersService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async validateUser(email: string, password: string): Promise<any> {
-    const user = await this.userRepository.findOne({ where: { email } });
+  async getProfile(userId: number) {
+    const user = await this.usersService.findOne(userId);
 
-    if (user && (await bcrypt.compare(password, user.password))) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...result } = user;
-      return result;
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
-    return null;
+
+    // Remove sensitive data
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, refreshTokens, ...userProfile } = user;
+
+    return {
+      user: userProfile,
+    };
   }
 
   async login(loginDto: LoginDto, response: Response) {
@@ -151,6 +159,17 @@ export class AuthService {
     response.clearCookie('refresh_token');
 
     return { message: 'Logged out successfully' };
+  }
+
+  async validateUser(email: string, password: string): Promise<any> {
+    const user = await this.userRepository.findOne({ where: { email } });
+
+    if (user && (await bcrypt.compare(password, user.password))) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...result } = user;
+      return result;
+    }
+    return null;
   }
 
   // Helper methods - TypeORM implementation

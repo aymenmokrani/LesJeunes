@@ -7,6 +7,7 @@ import {
   UseGuards,
   Request,
   Res,
+  Get,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -18,6 +19,12 @@ import { Response } from 'express';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  async getProfile(@Request() req) {
+    return this.authService.getProfile(req.user.sub || req.user.id);
+  }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
