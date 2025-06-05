@@ -7,6 +7,7 @@ async function bootstrap() {
     const port = process.env.PORT ?? 4000;
     const app = await NestFactory.create(AppModule);
     app.use(cookieParser());
+    app.setGlobalPrefix('api');
     await app.listen(port);
     console.log(`🚀 Server started listening on port ${port}`);
   } catch (error) {

@@ -65,6 +65,9 @@ export class AuthService {
       user: {
         id: user.id,
         email: user.email,
+        name: user.name,
+        storageQuota: Number(user.storageQuota),
+        storageUsed: Number(user.storageUsed),
       },
     };
   }
@@ -161,7 +164,7 @@ export class AuthService {
     return { message: 'Logged out successfully' };
   }
 
-  async validateUser(email: string, password: string): Promise<any> {
+  async validateUser(email: string, password: string): Promise<Partial<User>> {
     const user = await this.userRepository.findOne({ where: { email } });
 
     if (user && (await bcrypt.compare(password, user.password))) {
