@@ -24,20 +24,9 @@ interface ApiError {
   details?: unknown;
 }
 
-interface ApiResponse<T> {
-  data: T;
-  message?: string;
-  pagination?: {
-    page: number;
-    limit: number;
-    total: number;
-    total_pages: number;
-  };
-}
-
 // Default configuration
 const DEFAULT_CONFIG: ApiClientConfig = {
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || '/api',
   timeout: 10000, // 10 seconds
   retries: 3,
   retryDelay: 1000, // 1 second
@@ -102,13 +91,16 @@ class ApiClient {
             data: response.data,
           });
         }
-
+        console.log('axios iunterceptor response before update', response);
         return response;
       },
       (error: AxiosError) => {
         // Handle 401 - straight to login
         if (error.response?.status === 401) {
-          this.handleAuthError();
+          const currentPath = window.location.pathname;
+          if (currentPath !== '/login' && currentPath !== '/register') {
+            this.handleAuthError(); // Only redirect if NOT on auth pages
+          }
         }
 
         return Promise.reject(this.handleError(error));
@@ -117,11 +109,8 @@ class ApiClient {
   }
 
   // HTTP Methods
-  async get<T>(
-    url: string,
-    config?: AxiosRequestConfig
-  ): Promise<ApiResponse<T>> {
-    const response = await this.client.get<ApiResponse<T>>(url, config);
+  async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
+    const response = await this.client.get<T>(url, config);
     return response.data;
   }
 
@@ -129,8 +118,8 @@ class ApiClient {
     url: string,
     data?: unknown,
     config?: AxiosRequestConfig
-  ): Promise<ApiResponse<T>> {
-    const response = await this.client.post<ApiResponse<T>>(url, data, config);
+  ): Promise<T> {
+    const response = await this.client.post<T>(url, data, config);
     return response.data;
   }
 
@@ -138,8 +127,8 @@ class ApiClient {
     url: string,
     data?: unknown,
     config?: AxiosRequestConfig
-  ): Promise<ApiResponse<T>> {
-    const response = await this.client.put<ApiResponse<T>>(url, data, config);
+  ): Promise<T> {
+    const response = await this.client.put<T>(url, data, config);
     return response.data;
   }
 
@@ -147,16 +136,13 @@ class ApiClient {
     url: string,
     data?: unknown,
     config?: AxiosRequestConfig
-  ): Promise<ApiResponse<T>> {
-    const response = await this.client.patch<ApiResponse<T>>(url, data, config);
+  ): Promise<T> {
+    const response = await this.client.patch<T>(url, data, config);
     return response.data;
   }
 
-  async delete<T>(
-    url: string,
-    config?: AxiosRequestConfig
-  ): Promise<ApiResponse<T>> {
-    const response = await this.client.delete<ApiResponse<T>>(url, config);
+  async delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
+    const response = await this.client.delete<T>(url, config);
     return response.data;
   }
 
@@ -165,8 +151,8 @@ class ApiClient {
     url: string,
     formData: FormData,
     onProgress?: (progress: number) => void
-  ): Promise<ApiResponse<T>> {
-    const response = await this.client.post<ApiResponse<T>>(url, formData, {
+  ): Promise<T> {
+    const response = await this.client.post<T>(url, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -187,7 +173,9 @@ class ApiClient {
     // Let browser handle the download directly
     const link = document.createElement('a');
     link.href = url;
-    link.download = filename;
+    if (filename) {
+      link.download = filename;
+    }
     link.click();
   }
 
@@ -248,4 +236,4 @@ class ApiClient {
 export const apiClient = new ApiClient();
 
 // Export types
-export type { ApiClientConfig, ApiError, ApiResponse };
+export type { ApiClientConfig, ApiError };

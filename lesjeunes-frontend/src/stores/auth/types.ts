@@ -1,15 +1,7 @@
-interface User {
-  id: number;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { UserDto } from '@/lib/api/auth/auth.types';
 
 export interface AuthState {
-  user: User | null;
+  user: UserDto | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;

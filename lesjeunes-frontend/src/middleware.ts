@@ -6,7 +6,7 @@ export function middleware(request: NextRequest) {
   // Get auth cookie
   const authCookie = request.cookies.get('access_token');
 
-  // Protected routes - add your routes here
+  // Protected routes
   const protectedRoutes = ['/dashboard', '/files', '/settings'];
   const isProtectedRoute = protectedRoutes.some((route) =>
     pathname.startsWith(route)

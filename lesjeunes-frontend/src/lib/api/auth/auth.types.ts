@@ -13,19 +13,15 @@ export interface RegisterDto {
 }
 
 export interface AuthResponse {
-  access_token: string;
-  refresh_token: string;
   user: UserDto;
 }
 
 export interface UserDto {
   id: number;
   email: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-  createdAt: string;
-  updatedAt: string;
+  name: string;
+  storageQuota: number;
+  storageUsed: number;
 }
 
 export interface RefreshTokenDto {

@@ -7,8 +7,7 @@ export const checkAuth = createAsyncThunk(
   'auth/checkAuth',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await authApiClient.getProfile();
-      return response.data;
+      return await authApiClient.getProfile();
     } catch {
       return rejectWithValue('Not authenticated');
     }
@@ -21,8 +20,7 @@ export const login = createAsyncThunk<
   { rejectValue: string }
 >('auth/login', async ({ email, password }, { rejectWithValue }) => {
   try {
-    const response = await authApiClient.login({ email, password });
-    return response.data;
+    return authApiClient.login({ email, password });
   } catch (error) {
     return rejectWithValue(
       error instanceof Error ? error.message : 'Login failed'

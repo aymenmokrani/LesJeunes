@@ -2,7 +2,6 @@
 
 import { apiClient } from '../client';
 import { ENDPOINTS } from '../endpoints';
-import type { ApiResponse } from '../client';
 import type {
   LoginDto,
   RegisterDto,
@@ -12,24 +11,24 @@ import type {
 } from './auth.types';
 
 class AuthApiClient {
-  async login(data: LoginDto): Promise<ApiResponse<AuthResponse>> {
-    return apiClient.post(ENDPOINTS.AUTH.LOGIN, data);
+  async login(data: LoginDto): Promise<AuthResponse> {
+    return apiClient.post<AuthResponse>(ENDPOINTS.AUTH.LOGIN, data);
   }
 
-  async register(data: RegisterDto): Promise<ApiResponse<AuthResponse>> {
+  async register(data: RegisterDto): Promise<AuthResponse> {
     return apiClient.post(ENDPOINTS.AUTH.REGISTER, data);
   }
 
-  async logout(): Promise<ApiResponse<void>> {
+  async logout(): Promise<void> {
     return apiClient.post(ENDPOINTS.AUTH.LOGOUT);
   }
 
-  async refresh(data: RefreshTokenDto): Promise<ApiResponse<AuthResponse>> {
+  async refresh(data: RefreshTokenDto): Promise<AuthResponse> {
     return apiClient.post(ENDPOINTS.AUTH.REFRESH, data);
   }
 
-  async getProfile(): Promise<ApiResponse<UserDto>> {
-    return apiClient.get(ENDPOINTS.AUTH.PROFILE);
+  async getProfile(): Promise<UserDto> {
+    return apiClient.get<UserDto>(ENDPOINTS.AUTH.PROFILE);
   }
 }
 
