@@ -11,6 +11,22 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
+  {
+    languageOptions: {
+      parserOptions: {
+        // ✅ Force ESLint to use root tsconfig, not create one in src/
+        project: './tsconfig.json',
+        tsconfigRootDir: __dirname, // Frontend root directory
+        sourceType: 'module',
+      },
+    },
+    ignores: [
+      'src/tsconfig.json', //  Ignore auto-generated tsconfig in src
+      '**/tsconfig.json', //  Ignore any auto-generated tsconfigs
+      '!tsconfig.json', //  But keep the root one
+      '../backend/**/*', //  Ignore backend completely
+    ],
+  },
 ];
 
 export default eslintConfig;
