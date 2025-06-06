@@ -1,8 +1,8 @@
-import { useAppDispatch, useAppSelector } from '@/hooks/redux/useAppDispatch';
-import { checkAuth, login, logout, clearError } from '@/stores/auth/authSlice';
 import { useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from './useAppDispatch';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useRouter } from 'next/navigation';
+import { checkAuth, clearError, login, logout } from '@/stores/authSlice';
 
 export const useAuth = () => {
   const dispatch = useAppDispatch();

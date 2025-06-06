@@ -1,4 +1,4 @@
-// lib/api/upload/upload.types.ts
+// lib/api/upload/upload.dto.ts
 
 export interface UploadResponse {
   id: number;
@@ -6,8 +6,9 @@ export interface UploadResponse {
   fileName: string;
   mimeType: string;
   size: number;
-  path: string;
-  url: string;
+  storagePath: string;
+  folder: string;
+  visibility: string;
 }
 
 export interface UploadProgressResponse {

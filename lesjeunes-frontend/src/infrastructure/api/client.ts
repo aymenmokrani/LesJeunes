@@ -91,7 +91,6 @@ class ApiClient {
             data: response.data,
           });
         }
-        console.log('axios iunterceptor response before update', response);
         return response;
       },
       (error: AxiosError) => {

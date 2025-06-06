@@ -1,13 +1,16 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { authApiClient } from '@/lib/api/auth/authApi';
 import { AuthState, LoginCredentials } from './types';
-import { AuthResponse } from '@/lib/api/auth/auth.types';
+import { Session } from '@/domain/auth/Session.entity';
+import { AuthService } from '@/domain/auth/AuthService';
+import { AuthRepository } from '@/infrastructure/auth/AuthRepositoryImpl';
+
+const authService = new AuthService(new AuthRepository());
 
 export const checkAuth = createAsyncThunk(
   'auth/checkAuth',
   async (_, { rejectWithValue }) => {
     try {
-      return await authApiClient.getProfile();
+      return await authService.getCurrentUser();
     } catch {
       return rejectWithValue('Not authenticated');
     }
@@ -15,12 +18,12 @@ export const checkAuth = createAsyncThunk(
 );
 
 export const login = createAsyncThunk<
-  AuthResponse,
+  Session,
   LoginCredentials,
   { rejectValue: string }
 >('auth/login', async ({ email, password }, { rejectWithValue }) => {
   try {
-    return authApiClient.login({ email, password });
+    return authService.login(email, password);
   } catch (error) {
     return rejectWithValue(
       error instanceof Error ? error.message : 'Login failed'
@@ -32,7 +35,7 @@ export const logout = createAsyncThunk(
   'auth/logout',
   async (_, { rejectWithValue }) => {
     try {
-      await authApiClient.logout();
+      await authService.logout();
     } catch (error) {
       return rejectWithValue(
         error instanceof Error ? error.message : 'Logout failed'
@@ -80,7 +83,7 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(login.fulfilled, (state, action) => {
-        state.user = action.payload.user;
+        state.user = action.payload;
         state.isAuthenticated = true;
         state.isLoading = false;
         state.error = null;
