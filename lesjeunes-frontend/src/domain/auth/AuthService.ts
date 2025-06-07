@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IAuthRepository } from './IAuthRepository';
 import { Session } from './Session.entity';
 
@@ -16,7 +17,7 @@ export class AuthService {
       }
 
       return await this.authRepository.login(email.trim(), password);
-    } catch (error) {
+    } catch (error: any) {
       if (error.status === 401 || error.status === 403) {
         throw new Error('Invalid email or password');
       }
@@ -62,7 +63,7 @@ export class AuthService {
         password,
         name.trim()
       );
-    } catch (error) {
+    } catch (error: any) {
       if (error.status === 409) {
         throw new Error('An account with this email already exists');
       }
@@ -87,7 +88,7 @@ export class AuthService {
   async logout(): Promise<void> {
     try {
       await this.authRepository.logout();
-    } catch (error) {
+    } catch (error: any) {
       if (error.name === 'TypeError' || error.message?.includes('fetch')) {
         throw new Error(
           'Unable to connect. Please check your internet connection'
@@ -101,16 +102,14 @@ export class AuthService {
   async getCurrentUser(): Promise<Session | null> {
     try {
       return await this.authRepository.getCurrentUser();
-    } catch (error) {
+    } catch (error: any) {
       if (error.name === 'TypeError' || error.message?.includes('fetch')) {
         throw new Error(
           'Unable to connect. Please check your internet connection'
         );
       }
 
-      // For getCurrentUser, we might want to return null instead of throwing
-      // since user might just not be logged in
-      return null;
+      throw new Error('Not authenticated ');
     }
   }
 

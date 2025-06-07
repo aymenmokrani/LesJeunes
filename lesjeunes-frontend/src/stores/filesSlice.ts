@@ -126,7 +126,7 @@ const initialState: FilesState = {
   currentFolder: null,
   selectedItems: [],
   viewMode: 'grid',
-  isLoading: false,
+  isLoading: true,
   error: null,
   searchResults: [],
   isSearching: false,
