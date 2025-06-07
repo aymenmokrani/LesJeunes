@@ -89,7 +89,15 @@ export function FileItem({
       onDoubleClick={handleDoubleClick}
     >
       <div className="flex items-center space-x-3 flex-1">
-        <FileIcon className="h-8 w-8 text-gray-500" />
+        {file.thumbnailUrl ? (
+          <NextImage
+            src={file.thumbnailUrl}
+            alt={file.name}
+            className="h-12 w-12 object-cover rounded"
+          />
+        ) : (
+          getFileIcon(file)
+        )}
         <div className="flex-1 min-w-0">
           <p className="font-medium truncate">{file.name}</p>
           <p className="text-sm text-muted-foreground">
