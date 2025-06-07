@@ -12,7 +12,7 @@ import { Folder } from '@/modules/files/entities/folder.entity';
 
 @Entity('users')
 export class User {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: number;
 
   @Column({ unique: true })
