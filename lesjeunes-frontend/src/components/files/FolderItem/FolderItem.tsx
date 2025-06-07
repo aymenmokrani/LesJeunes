@@ -4,18 +4,23 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Folder as FolderIcon, MoreVertical } from 'lucide-react';
 import { Folder } from '@/domain/files/FileEntities.entity';
-import { useFiles } from '@/lib/hooks/useFiles';
 import { formatDate } from '@/lib/utils';
 
 interface FolderItemProps {
   folder: Folder;
   viewMode: 'grid' | 'list';
   isSelected: boolean;
+  selectItem: (id: number) => void;
+  navigateToFolder: (id: number) => void;
 }
 
-export function FolderItem({ folder, viewMode, isSelected }: FolderItemProps) {
-  const { selectItem, navigateToFolder } = useFiles();
-
+export function FolderItem({
+  folder,
+  viewMode,
+  isSelected,
+  selectItem,
+  navigateToFolder,
+}: FolderItemProps) {
   const handleClick = () => {
     selectItem(folder.id);
   };

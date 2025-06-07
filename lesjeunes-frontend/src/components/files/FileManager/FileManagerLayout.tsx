@@ -14,6 +14,12 @@ export function FileManagerLayout() {
     viewMode,
     isLoading,
     error,
+    // Get all the functions we need to pass down
+    changeViewMode,
+    search,
+    createFolder,
+    navigateToFolder,
+    selectItem,
   } = useFiles();
 
   if (isLoading) {
@@ -34,14 +40,24 @@ export function FileManagerLayout() {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      <FileManagerHeader />
-      <FileManagerBreadcrumb currentFolder={currentFolder} />
+      <FileManagerHeader
+        viewMode={viewMode}
+        changeViewMode={changeViewMode}
+        search={search}
+        createFolder={createFolder}
+      />
+      <FileManagerBreadcrumb
+        currentFolder={currentFolder}
+        navigateToFolder={navigateToFolder}
+      />
       <div className="flex-1 overflow-auto">
         <FileManagerGrid
           files={files}
           folders={folders}
           viewMode={viewMode}
           selectedItems={selectedItems}
+          selectItem={selectItem}
+          navigateToFolder={navigateToFolder}
         />
       </div>
     </div>

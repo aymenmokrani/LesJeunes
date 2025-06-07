@@ -36,6 +36,21 @@ export class FilesController {
     return this.filesService.getUserFiles(req.user, folderId);
   }
 
+  @Get('folders')
+  async getUserFolders(
+    @Request() req,
+    @Query('parentId', new ParseIntPipe({ optional: true })) parentId?: number,
+  ) {
+    return this.filesService.getUserFolders(req.user, parentId);
+  }
+
+  // Folder operations
+  @Post('folders')
+  @HttpCode(HttpStatus.CREATED)
+  async createFolder(@Body() createDto: CreateFolderDto, @Request() req) {
+    return this.filesService.createFolder(createDto, req.user);
+  }
+
   @Get(':id')
   async getFileById(@Param('id', ParseIntPipe) id: number, @Request() req) {
     return this.filesService.getFileById(id, req.user);
@@ -87,21 +102,6 @@ export class FilesController {
     @Request() req,
   ) {
     return this.filesService.moveFile(id, moveDto, req.user);
-  }
-
-  // Folder operations
-  @Post('folders')
-  @HttpCode(HttpStatus.CREATED)
-  async createFolder(@Body() createDto: CreateFolderDto, @Request() req) {
-    return this.filesService.createFolder(createDto, req.user);
-  }
-
-  @Get('folders')
-  async getUserFolders(
-    @Request() req,
-    @Query('parentId', new ParseIntPipe({ optional: true })) parentId?: number,
-  ) {
-    return this.filesService.getUserFolders(req.user, parentId);
   }
 
   @Get('folders/:id')

@@ -2,17 +2,16 @@
 
 import { ChevronRight, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useFiles } from '@/lib/hooks/useFiles';
 
 interface FileManagerBreadcrumbProps {
   currentFolder: number | null;
+  navigateToFolder: (folderId: number | null) => void;
 }
 
 export function FileManagerBreadcrumb({
   currentFolder,
+  navigateToFolder,
 }: FileManagerBreadcrumbProps) {
-  const { navigateToFolder } = useFiles();
-
   // Mock breadcrumb path - in real app, you'd build this from folder hierarchy
   const breadcrumbPath = currentFolder
     ? [

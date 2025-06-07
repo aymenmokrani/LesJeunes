@@ -10,11 +10,21 @@ import {
   FolderPlus,
   Settings,
 } from 'lucide-react';
-import { useFiles } from '@/lib/hooks/useFiles';
 import { useState } from 'react';
 
-export function FileManagerHeader() {
-  const { viewMode, changeViewMode, search, createFolder } = useFiles();
+interface FileManagerHeaderProps {
+  viewMode: 'grid' | 'list';
+  changeViewMode: (mode: 'grid' | 'list') => void;
+  search: (query: string) => Promise<boolean>;
+  createFolder: (name: string, parentId?: number) => Promise<boolean>;
+}
+
+export function FileManagerHeader({
+  viewMode,
+  changeViewMode,
+  search,
+  createFolder,
+}: FileManagerHeaderProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
 

@@ -26,7 +26,7 @@ export const useAuth = () => {
       );
 
       if (isAuthenticated && isAuthPage) {
-        router.push('/dashboard'); // Redirect authed users away from login
+        router.push('/'); // Redirect authed users away from login
       } else if (!isAuthenticated && isProtectedPage) {
         router.push('/login'); // Redirect unauthed users to login
       }

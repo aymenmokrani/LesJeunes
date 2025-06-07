@@ -32,10 +32,9 @@ export const useFiles = (currentFolderId?: number) => {
     isSearching,
   } = useAppSelector((state) => state.files);
 
-  // Load files and folders when currentFolderId changes
   useEffect(() => {
     dispatch(getFiles(currentFolderId));
-    //dispatch(getFolders(currentFolderId));
+    dispatch(getFolders(currentFolderId));
   }, [dispatch, currentFolderId]);
 
   const handleCreateFolder = async (name: string, parentId?: number) => {
@@ -126,7 +125,6 @@ export const useFiles = (currentFolderId?: number) => {
     dispatch(getFiles(currentFolderId));
     dispatch(getFolders(currentFolderId));
   };
-
   return {
     // State
     files,

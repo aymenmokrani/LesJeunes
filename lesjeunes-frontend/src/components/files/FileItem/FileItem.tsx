@@ -2,25 +2,21 @@
 
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  FileText,
-  Image,
-  File as FileIcon,
-  MoreVertical,
-  Download,
-} from 'lucide-react';
+import { FileText, Image, File as FileIcon, MoreVertical } from 'lucide-react';
 import { File } from '@/domain/files/FileEntities.entity';
-import { useFiles } from '@/lib/hooks/useFiles';
-import { formatBytes, formatDate } from '@/lib/utils';
+import { formatDate, formatBytes } from '@/lib/utils';
+import NextImage from 'next/image';
 
 interface FileItemProps {
   file: File;
   viewMode: 'grid' | 'list';
   isSelected: boolean;
+  selectItem: (id: number) => void;
 }
 
 const getFileIcon = (file: File) => {
   if (file.mimeType?.startsWith('image/')) {
+    // eslint-disable-next-line jsx-a11y/alt-text
     return <Image className="h-8 w-8 text-green-500" />;
   }
 
@@ -31,22 +27,19 @@ const getFileIcon = (file: File) => {
   return <FileIcon className="h-8 w-8 text-gray-500" />;
 };
 
-export function FileItem({ file, viewMode, isSelected }: FileItemProps) {
-  const { selectItem } = useFiles();
-
+export function FileItem({
+  file,
+  viewMode,
+  isSelected,
+  selectItem,
+}: FileItemProps) {
   const handleClick = () => {
     selectItem(file.id);
   };
 
   const handleDoubleClick = () => {
-    // Open file - implement file opening logic
+    // Handle file opening/download
     console.log('Open file:', file.name);
-  };
-
-  const handleDownload = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    // Implement download logic
-    console.log('Download file:', file.name);
   };
 
   if (viewMode === 'grid') {
@@ -60,7 +53,7 @@ export function FileItem({ file, viewMode, isSelected }: FileItemProps) {
       >
         <div className="flex flex-col items-center space-y-3">
           {file.thumbnailUrl ? (
-            <img
+            <NextImage
               src={file.thumbnailUrl}
               alt={file.name}
               className="h-12 w-12 object-cover rounded"
@@ -96,37 +89,22 @@ export function FileItem({ file, viewMode, isSelected }: FileItemProps) {
       onDoubleClick={handleDoubleClick}
     >
       <div className="flex items-center space-x-3 flex-1">
-        {file.thumbnailUrl ? (
-          <img
-            src={file.thumbnailUrl}
-            alt={file.name}
-            className="h-8 w-8 object-cover rounded"
-          />
-        ) : (
-          getFileIcon(file)
-        )}
+        <FileIcon className="h-8 w-8 text-gray-500" />
         <div className="flex-1 min-w-0">
           <p className="font-medium truncate">{file.name}</p>
           <p className="text-sm text-muted-foreground">
             {formatDate(file.modifiedAt)}
           </p>
         </div>
+        <div className="text-sm text-muted-foreground w-32">
+          {formatDate(file.modifiedAt)}
+        </div>
         <div className="text-sm text-muted-foreground w-24">
           {formatBytes(file.size)}
         </div>
-        <div className="flex items-center space-x-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0"
-            onClick={handleDownload}
-          >
-            <Download className="h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-            <MoreVertical className="h-4 w-4" />
-          </Button>
-        </div>
+        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+          <MoreVertical className="h-4 w-4" />
+        </Button>
       </div>
     </div>
   );

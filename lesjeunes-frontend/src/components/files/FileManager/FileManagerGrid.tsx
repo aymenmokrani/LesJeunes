@@ -9,6 +9,8 @@ interface FileManagerGridProps {
   folders: Folder[];
   viewMode: 'grid' | 'list';
   selectedItems: number[];
+  selectItem: (id: number) => void;
+  navigateToFolder: (id: number) => void;
 }
 
 export function FileManagerGrid({
@@ -16,6 +18,8 @@ export function FileManagerGrid({
   folders,
   viewMode,
   selectedItems,
+  selectItem,
+  navigateToFolder,
 }: FileManagerGridProps) {
   if (files.length === 0 && folders.length === 0) {
     return (
@@ -39,6 +43,8 @@ export function FileManagerGrid({
               folder={folder}
               viewMode="grid"
               isSelected={selectedItems.includes(folder.id)}
+              selectItem={selectItem}
+              navigateToFolder={navigateToFolder}
             />
           ))}
 
@@ -49,6 +55,7 @@ export function FileManagerGrid({
               file={file}
               viewMode="grid"
               isSelected={selectedItems.includes(file.id)}
+              selectItem={selectItem}
             />
           ))}
         </div>
@@ -76,6 +83,8 @@ export function FileManagerGrid({
               folder={folder}
               viewMode="list"
               isSelected={selectedItems.includes(folder.id)}
+              selectItem={selectItem}
+              navigateToFolder={navigateToFolder}
             />
           ))}
 
@@ -86,6 +95,7 @@ export function FileManagerGrid({
               file={file}
               viewMode="list"
               isSelected={selectedItems.includes(file.id)}
+              selectItem={selectItem}
             />
           ))}
         </div>

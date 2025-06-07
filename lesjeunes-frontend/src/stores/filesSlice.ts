@@ -165,10 +165,10 @@ const filesSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // Get Files
-      // .addCase(getFiles.pending, (state) => {
-      //   state.isLoading = true;
-      //   state.error = null;
-      // })
+      .addCase(getFiles.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
       .addCase(getFiles.fulfilled, (state, action) => {
         state.files = action.payload;
         state.isLoading = false;

@@ -16,9 +16,9 @@ export function middleware(request: NextRequest) {
   const authRoutes = ['/login', '/register'];
   const isAuthRoute = authRoutes.includes(pathname);
 
-  // If user is authenticated and tries to access auth pages, redirect to dashboard
+  // If user is authenticated and tries to access auth pages, redirect to HomePage
   if (authCookie && isAuthRoute) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    return NextResponse.redirect(new URL('/', request.url));
   }
 
   // If user is not authenticated and tries to access protected pages, redirect to login
