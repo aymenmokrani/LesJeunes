@@ -18,8 +18,7 @@ export class CreateFolderDto {
   name: string; // Folder name
 
   @IsOptional()
-  @IsNumber({}, { message: 'Parent folder ID must be a number' })
-  parentId?: number; // Parent folder (null = root level)
+  parentId?: string; // Parent folder (null = root level)
 
   @IsOptional()
   @IsString({ message: 'Description must be a string' })
@@ -67,5 +66,5 @@ export class UpdateFolderDto {
 
   @IsOptional()
   @IsNumber({}, { message: 'Parent folder ID must be a number' })
-  parentId?: number; // Move folder to different parent
+  parentId?: string; // Move folder to different parent
 }

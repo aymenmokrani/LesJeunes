@@ -10,8 +10,7 @@ import {
 
 export class UploadFileDto {
   @IsOptional()
-  @IsNumber({}, { message: 'Folder ID must be a number' })
-  folderId?: number; // Optional parent folder
+  folderId?: string; // Optional parent folder
 
   @IsOptional()
   @IsString({ message: 'Description must be a string' })
@@ -69,6 +68,5 @@ export class UpdateFileDto {
   visibility?: 'private' | 'shared' | 'public';
 
   @IsOptional()
-  @IsNumber({}, { message: 'Folder ID must be a number' })
-  folderId?: number; // Move to different folder
+  folderId?: string; // Move to different folder
 }

@@ -39,7 +39,7 @@ export class FilesService {
     return file;
   }
 
-  async getFileById(id: number, user: User): Promise<File> {
+  async getFileById(id: string, user: User): Promise<File> {
     const file = await this.filesRepository.findFileById(id, user.id);
     if (!file) {
       throw new NotFoundException('File not found');
@@ -47,7 +47,7 @@ export class FilesService {
     return file;
   }
 
-  async getUserFiles(user: User, folderId?: number): Promise<File[]> {
+  async getUserFiles(user: User, folderId?: string): Promise<File[]> {
     // Validate folder exists and belongs to user if folderId provided
     if (folderId) {
       const folder = await this.getFolderById(folderId, user);
@@ -60,7 +60,7 @@ export class FilesService {
   }
 
   async updateFile(
-    id: number,
+    id: string,
     updateDto: UpdateFileDto,
     user: User,
   ): Promise<File> {
@@ -97,7 +97,7 @@ export class FilesService {
     return this.filesRepository.updateFile(id, user.id, updateDto);
   }
 
-  async deleteFile(id: number, user: User): Promise<void> {
+  async deleteFile(id: string, user: User): Promise<void> {
     const file = await this.getFileById(id, user);
 
     await this.filesRepository.deleteFile(id, user.id);
@@ -108,7 +108,7 @@ export class FilesService {
     }
   }
 
-  async moveFile(id: number, moveDto: MoveFileDto, user: User): Promise<File> {
+  async moveFile(id: string, moveDto: MoveFileDto, user: User): Promise<File> {
     const file = await this.getFileById(id, user);
 
     // Validate destination folder
@@ -141,7 +141,7 @@ export class FilesService {
   }
 
   async downloadFile(
-    id: number,
+    id: string,
     user: User,
   ): Promise<{
     file: File;
@@ -228,7 +228,7 @@ export class FilesService {
     });
   }
 
-  async getFolderById(id: number, user: User): Promise<Folder> {
+  async getFolderById(id: string, user: User): Promise<Folder> {
     const folder = await this.filesRepository.findFolderById(id, user.id);
     if (!folder) {
       throw new NotFoundException('Folder not found');
@@ -236,12 +236,12 @@ export class FilesService {
     return folder;
   }
 
-  async getUserFolders(user: User, parentId?: number): Promise<Folder[]> {
+  async getUserFolders(user: User, parentId?: string): Promise<Folder[]> {
     return this.filesRepository.findFoldersByUser(user.id, parentId);
   }
 
   async updateFolder(
-    id: number,
+    id: string,
     updateDto: UpdateFolderDto,
     user: User,
   ): Promise<Folder> {
@@ -267,7 +267,7 @@ export class FilesService {
     return this.filesRepository.updateFolder(id, user.id, updateDto);
   }
 
-  async deleteFolder(id: number, user: User): Promise<void> {
+  async deleteFolder(id: string, user: User): Promise<void> {
     const folder = await this.getFolderById(id, user);
 
     // Check if folder has files or subfolders
@@ -295,8 +295,8 @@ export class FilesService {
 
   // Helper methods
   private async isChildFolder(
-    parentId: number,
-    childId: number,
+    parentId: string,
+    childId: string,
     user: User,
   ): Promise<boolean> {
     const parent = await this.getFolderById(parentId, user);

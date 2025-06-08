@@ -19,14 +19,14 @@ export class FilesRepository {
     return this.fileRepo.save(file);
   }
 
-  async findFileById(id: number, userId: number): Promise<File | null> {
+  async findFileById(id: string, userId: string): Promise<File | null> {
     return this.fileRepo.findOne({
       where: { id, owner: { id: userId } },
       relations: ['owner', 'folder'],
     });
   }
 
-  async findFilesByUser(userId: number, folderId?: number): Promise<File[]> {
+  async findFilesByUser(userId: string, folderId?: string): Promise<File[]> {
     const whereCondition: any = { owner: { id: userId } };
 
     if (folderId !== undefined) {
@@ -40,7 +40,7 @@ export class FilesRepository {
     });
   }
 
-  async findFilesByFolder(folderId: number, userId: number): Promise<File[]> {
+  async findFilesByFolder(folderId: string, userId: string): Promise<File[]> {
     return this.fileRepo.find({
       where: { folder: { id: folderId }, owner: { id: userId } },
       relations: ['folder'],
@@ -49,8 +49,8 @@ export class FilesRepository {
   }
 
   async updateFile(
-    id: number,
-    userId: number,
+    id: string,
+    userId: string,
     updateData: Partial<File>,
   ): Promise<File> {
     await this.fileRepo.update(
@@ -60,11 +60,11 @@ export class FilesRepository {
     return this.findFileById(id, userId);
   }
 
-  async deleteFile(id: number, userId: number): Promise<void> {
+  async deleteFile(id: string, userId: string): Promise<void> {
     await this.fileRepo.delete({ id, owner: { id: userId } });
   }
 
-  async deleteMultipleFiles(fileIds: number[], userId: number): Promise<void> {
+  async deleteMultipleFiles(fileIds: string[], userId: string): Promise<void> {
     await this.fileRepo.delete({
       id: { $in: fileIds } as any,
       owner: { id: userId },
@@ -72,9 +72,9 @@ export class FilesRepository {
   }
 
   async moveFileToFolder(
-    fileId: number,
-    folderId: number | null,
-    userId: number,
+    fileId: string,
+    folderId: string | null,
+    userId: string,
   ): Promise<File> {
     const folder = folderId
       ? await this.folderRepo.findOne({ where: { id: folderId } })
@@ -82,7 +82,7 @@ export class FilesRepository {
     return this.updateFile(fileId, userId, { folder });
   }
 
-  async incrementDownloadCount(fileId: number): Promise<void> {
+  async incrementDownloadCount(fileId: string): Promise<void> {
     await this.fileRepo.increment({ id: fileId }, 'downloadCount', 1);
     await this.fileRepo.update({ id: fileId }, { lastAccessedAt: new Date() });
   }
@@ -93,7 +93,7 @@ export class FilesRepository {
     return this.folderRepo.save(folder);
   }
 
-  async findFolderById(id: number, userId: number): Promise<Folder | null> {
+  async findFolderById(id: string, userId: string): Promise<Folder | null> {
     return this.folderRepo.findOne({
       where: { id, owner: { id: userId }, isActive: true },
       relations: ['owner', 'parent', 'children', 'files'],
@@ -101,8 +101,8 @@ export class FilesRepository {
   }
 
   async findFoldersByUser(
-    userId: number,
-    parentId?: number,
+    userId: string,
+    parentId?: string,
   ): Promise<Folder[]> {
     const whereCondition: any = { owner: { id: userId }, isActive: true };
 
@@ -118,8 +118,8 @@ export class FilesRepository {
   }
 
   async updateFolder(
-    id: number,
-    userId: number,
+    id: string,
+    userId: string,
     updateData: Partial<Folder>,
   ): Promise<Folder> {
     await this.folderRepo.update(
@@ -129,7 +129,7 @@ export class FilesRepository {
     return this.findFolderById(id, userId);
   }
 
-  async deleteFolder(id: number, userId: number): Promise<void> {
+  async deleteFolder(id: string, userId: string): Promise<void> {
     // Soft delete - mark as inactive
     await this.folderRepo.update(
       { id, owner: { id: userId } },
@@ -137,7 +137,7 @@ export class FilesRepository {
     );
   }
 
-  async updateFolderStats(folderId: number): Promise<void> {
+  async updateFolderStats(folderId: string): Promise<void> {
     // Update file count and total size for folder
     const stats = await this.fileRepo
       .createQueryBuilder('file')
@@ -153,7 +153,7 @@ export class FilesRepository {
   }
 
   // Search operations
-  async searchFiles(userId: number, searchTerm: string): Promise<File[]> {
+  async searchFiles(userId: string, searchTerm: string): Promise<File[]> {
     return this.fileRepo
       .createQueryBuilder('file')
       .leftJoinAndSelect('file.folder', 'folder')
@@ -166,7 +166,7 @@ export class FilesRepository {
       .getMany();
   }
 
-  async searchFolders(userId: number, searchTerm: string): Promise<Folder[]> {
+  async searchFolders(userId: string, searchTerm: string): Promise<Folder[]> {
     return this.folderRepo
       .createQueryBuilder('folder')
       .where('folder.ownerId = :userId', { userId })

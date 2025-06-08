@@ -11,7 +11,6 @@ import {
   UseInterceptors,
   UploadedFile,
   UploadedFiles,
-  ParseIntPipe,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
@@ -95,7 +94,7 @@ export class UploadController {
   @Put('replace/:id')
   @UseInterceptors(FileUploadInterceptor('file'), FileValidationInterceptor)
   async replaceFile(
-    @Param('id', ParseIntPipe) fileId: number,
+    @Param('id') fileId: string,
     @UploadedFile() file: Express.Multer.File,
     @Request() req,
   ) {

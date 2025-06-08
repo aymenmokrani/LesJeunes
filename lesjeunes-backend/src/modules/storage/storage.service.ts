@@ -56,7 +56,7 @@ export class StorageService {
 
   // Helper method to generate unique storage paths
   generateStoragePath(
-    userId: number,
+    userId: string,
     originalFileName: string,
     fileId?: string,
   ): string {

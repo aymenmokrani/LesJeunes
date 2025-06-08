@@ -25,7 +25,7 @@ export class AuthService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async getProfile(userId: number) {
+  async getProfile(userId: string) {
     const user = await this.usersService.findOne(userId);
 
     if (!user) {
@@ -153,7 +153,7 @@ export class AuthService {
     }
   }
 
-  async logout(userId: number, response: Response) {
+  async logout(userId: string, response: Response) {
     // Remove all refresh tokens for the user
     await this.removeAllRefreshTokens(userId);
 
@@ -177,7 +177,7 @@ export class AuthService {
 
   // Helper methods - TypeORM implementation
   private async storeRefreshToken(
-    userId: number,
+    userId: string,
     refreshToken: string,
   ): Promise<void> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
@@ -186,7 +186,7 @@ export class AuthService {
   }
 
   private async removeRefreshToken(
-    userId: number,
+    userId: string,
     refreshToken: string,
   ): Promise<void> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
@@ -196,12 +196,12 @@ export class AuthService {
     await this.userRepository.save(user);
   }
 
-  private async removeAllRefreshTokens(userId: number): Promise<void> {
+  private async removeAllRefreshTokens(userId: string): Promise<void> {
     await this.userRepository.update(userId, { refreshTokens: [] });
   }
 
   private async replaceRefreshToken(
-    userId: number,
+    userId: string,
     oldToken: string,
     newToken: string,
   ): Promise<void> {

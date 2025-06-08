@@ -15,7 +15,7 @@ import { Folder } from './folder.entity';
 @Index(['owner', 'folder']) // Optimize queries by owner and folder
 export class File {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   // Basic file information
   @Column()

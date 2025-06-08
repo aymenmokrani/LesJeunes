@@ -10,7 +10,6 @@ import {
   Query,
   Request,
   UseGuards,
-  ParseIntPipe,
   HttpCode,
   HttpStatus,
   Res,
@@ -29,18 +28,12 @@ export class FilesController {
 
   // File operations
   @Get()
-  async getUserFiles(
-    @Request() req,
-    @Query('folderId', new ParseIntPipe({ optional: true })) folderId?: number,
-  ) {
+  async getUserFiles(@Request() req, @Query('folderId') folderId?: string) {
     return this.filesService.getUserFiles(req.user, folderId);
   }
 
   @Get('folders')
-  async getUserFolders(
-    @Request() req,
-    @Query('parentId', new ParseIntPipe({ optional: true })) parentId?: number,
-  ) {
+  async getUserFolders(@Request() req, @Query('parentId') parentId?: string) {
     return this.filesService.getUserFolders(req.user, parentId);
   }
 
@@ -52,13 +45,13 @@ export class FilesController {
   }
 
   @Get(':id')
-  async getFileById(@Param('id', ParseIntPipe) id: number, @Request() req) {
+  async getFileById(@Param('id') id: string, @Request() req) {
     return this.filesService.getFileById(id, req.user);
   }
 
   @Get(':id/download')
   async downloadFile(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Request() req,
     @Res() res: Response,
   ) {
@@ -82,7 +75,7 @@ export class FilesController {
 
   @Put(':id')
   async updateFile(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateDto: UpdateFileDto,
     @Request() req,
   ) {
@@ -91,13 +84,13 @@ export class FilesController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteFile(@Param('id', ParseIntPipe) id: number, @Request() req) {
+  async deleteFile(@Param('id') id: string, @Request() req) {
     return this.filesService.deleteFile(id, req.user);
   }
 
   @Post(':id/move')
   async moveFile(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() moveDto: MoveFileDto,
     @Request() req,
   ) {
@@ -105,13 +98,13 @@ export class FilesController {
   }
 
   @Get('folders/:id')
-  async getFolderById(@Param('id', ParseIntPipe) id: number, @Request() req) {
+  async getFolderById(@Param('id') id: string, @Request() req) {
     return this.filesService.getFolderById(id, req.user);
   }
 
   @Put('folders/:id')
   async updateFolder(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateDto: UpdateFolderDto,
     @Request() req,
   ) {
@@ -120,7 +113,7 @@ export class FilesController {
 
   @Delete('folders/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteFolder(@Param('id', ParseIntPipe) id: number, @Request() req) {
+  async deleteFolder(@Param('id') id: string, @Request() req) {
     return this.filesService.deleteFolder(id, req.user);
   }
 

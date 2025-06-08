@@ -44,7 +44,7 @@ export class UsersService {
   }
 
   // Business logic: Get user by ID with existence check
-  async findOne(id: number): Promise<User> {
+  async findOne(id: string): Promise<User> {
     const user = await this.userRepository.findById(id);
     if (!user || !user.isActive) {
       throw new NotFoundException('User not found'); // Error handling
@@ -53,21 +53,21 @@ export class UsersService {
   }
 
   // Business logic: Update user with existence check
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     // Ensure the user exists before updating
     await this.findOne(id); // Reuse existing validation
     return this.userRepository.update(id, updateUserDto);
   }
 
   // Business logic: Soft delete (deactivate user)
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     // Ensure user exists before deleting
     await this.findOne(id); // Reuse existing validation
     await this.userRepository.softDelete(id);
   }
 
   // Business logic: Update user storage usage
-  async updateStorageUsage(userId: number, sizeChange: number): Promise<void> {
+  async updateStorageUsage(userId: string, sizeChange: number): Promise<void> {
     const user = await this.findOne(userId);
     const newStorageUsed = user.storageUsed + sizeChange;
 
@@ -80,7 +80,7 @@ export class UsersService {
 
   // Business logic: Check if user has enough storage space
   async checkStorageSpace(
-    userId: number,
+    userId: string,
     requiredSpace: number,
   ): Promise<boolean> {
     const user = await this.findOne(userId);

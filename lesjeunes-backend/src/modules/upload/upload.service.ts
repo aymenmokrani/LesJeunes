@@ -148,7 +148,7 @@ export class UploadService {
   }
 
   async replaceFile(
-    fileId: number,
+    fileId: string,
     newFile: Express.Multer.File,
     user: User,
   ): Promise<File> {

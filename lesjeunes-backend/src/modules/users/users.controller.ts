@@ -7,7 +7,6 @@ import {
   Patch,
   Param,
   Delete,
-  ParseIntPipe, // Validation pipe for ID
   UseGuards, // Security
   HttpCode,
   HttpStatus,
@@ -34,14 +33,14 @@ export class UsersController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id') id: string) {
     // Validation: Ensure ID is number
     return this.usersService.findOne(id);
   }
 
   @Patch(':id')
   update(
-    @Param('id', ParseIntPipe) id: number, // Validation pipe
+    @Param('id') id: string, // Validation pipe
     @Body() updateUserDto: UpdateUserDto, // Validation DTO
   ) {
     return this.usersService.update(id, updateUserDto);
@@ -49,7 +48,7 @@ export class UsersController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id', ParseIntPipe) id: number) {
+  remove(@Param('id') id: string) {
     return this.usersService.remove(id);
   }
 }

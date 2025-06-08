@@ -25,16 +25,16 @@ export class UserRepository {
     return this.userRepo.save(user);
   }
 
-  async findById(id: number): Promise<User | null> {
+  async findById(id: string): Promise<User | null> {
     return this.userRepo.findOne({ where: { id } });
   }
 
-  async update(id: number, userData: Partial<User>): Promise<User> {
+  async update(id: string, userData: Partial<User>): Promise<User> {
     await this.userRepo.update(id, userData);
     return this.findById(id);
   }
 
-  async softDelete(id: number): Promise<void> {
+  async softDelete(id: string): Promise<void> {
     await this.userRepo.update(id, { isActive: false });
   }
 }
