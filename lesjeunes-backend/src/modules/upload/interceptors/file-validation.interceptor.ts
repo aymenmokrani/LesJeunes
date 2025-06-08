@@ -16,7 +16,8 @@ export class FileValidationInterceptor implements NestInterceptor {
   private readonly allowedExtensions: string[];
 
   constructor() {
-    this.maxFileSize = parseInt(process.env.MAX_FILE_SIZE) || 50 * 1024 * 1024; // 50MB
+    this.maxFileSize =
+      parseInt(process.env.MAX_FILE_SIZE) || 5 * 1024 * 1024 * 1024; // 5GB
     this.allowedTypes = [
       'image/jpeg',
       'image/png',
@@ -31,6 +32,7 @@ export class FileValidationInterceptor implements NestInterceptor {
       'text/csv',
       'application/zip',
       'application/x-rar-compressed',
+      'application/x-zip-compressed',
       'video/mp4',
       'video/quicktime',
       'video/x-msvideo',
@@ -163,7 +165,7 @@ export class FileValidationInterceptor implements NestInterceptor {
       ],
       '.txt': ['text/plain'],
       '.csv': ['text/csv', 'application/csv'],
-      '.zip': ['application/zip'],
+      '.zip': ['application/zip', 'application/x-zip-compressed'],
       '.rar': ['application/x-rar-compressed'],
       '.mp4': ['video/mp4'],
       '.mov': ['video/quicktime'],

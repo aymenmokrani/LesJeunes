@@ -5,6 +5,7 @@ import { LocalStorageService } from './providers/local-storage.service';
 import { MinioStorageService } from './providers/minio-storage.service';
 import { StorageFactory } from './storage.factory';
 import { StorageService } from '@/modules/storage/storage.service';
+import { TempStorageService } from '@/modules/storage/providers/temp-storage.service';
 
 // Token for dependency injection
 export const STORAGE_PROVIDER_TOKEN = 'STORAGE_PROVIDER';
@@ -34,7 +35,8 @@ const storageServiceFactory: Provider = {
     StorageFactory,
     storageProviderFactory,
     storageServiceFactory,
+    TempStorageService,
   ],
-  exports: [STORAGE_PROVIDER_TOKEN, StorageService],
+  exports: [STORAGE_PROVIDER_TOKEN, StorageService, TempStorageService],
 })
 export class StorageModule {}

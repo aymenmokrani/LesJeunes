@@ -20,7 +20,7 @@ export const FileUploadInterceptor = (fieldName: string = 'file') => {
       },
     }),
     limits: {
-      fileSize: parseInt(process.env.MAX_FILE_SIZE) || 50 * 1024 * 1024, // 50MB default
+      fileSize: parseInt(process.env.MAX_FILE_SIZE) || 5 * 1024 * 1024 * 1024, // 5GB default
       files: 1, // Single file
     },
     fileFilter: (req, file, cb) => {
@@ -34,6 +34,7 @@ export const FileUploadInterceptor = (fieldName: string = 'file') => {
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         'text/plain',
         'application/zip',
+        'application/x-zip-compressed',
         'video/mp4',
         'video/quicktime',
       ];

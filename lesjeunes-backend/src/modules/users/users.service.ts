@@ -69,7 +69,7 @@ export class UsersService {
   // Business logic: Update user storage usage
   async updateStorageUsage(userId: string, sizeChange: number): Promise<void> {
     const user = await this.findOne(userId);
-    const newStorageUsed = user.storageUsed + sizeChange;
+    const newStorageUsed = Number(user.storageUsed) + Number(sizeChange);
 
     if (newStorageUsed < 0) {
       throw new Error('Storage usage cannot be negative');

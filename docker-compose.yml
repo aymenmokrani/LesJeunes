@@ -36,9 +36,25 @@ services:
     networks:
       - app-network
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"    # AMQP port (for your app to connect)
+      - "15672:15672"  # Management UI port (web dashboard)
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: password123
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - app-network
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   minio_data:
+  rabbitmq_data:
 
 networks:
   app-network:

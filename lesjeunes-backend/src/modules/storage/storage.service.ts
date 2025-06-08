@@ -13,9 +13,27 @@ export class StorageService {
   }
 
   // Public API methods that delegate to the active provider
-  async uploadFile(file: Buffer, storagePath: string): Promise<string> {
+  async uploadFile(
+    file: Buffer | NodeJS.ReadableStream,
+    storagePath: string,
+  ): Promise<string> {
     this.logger.log(`Uploading file: ${storagePath}`);
-    return this.provider.upload(file, storagePath);
+    let fileBuffer: Buffer;
+
+    if (file instanceof Buffer) {
+      fileBuffer = file;
+    } else {
+      // Convert stream to buffer
+      const chunks: Buffer[] = [];
+      for await (const chunk of file) {
+        const buffer = Buffer.isBuffer(chunk)
+          ? chunk
+          : Buffer.from(chunk as any);
+        chunks.push(buffer);
+      }
+      fileBuffer = Buffer.concat(chunks);
+    }
+    return this.provider.upload(fileBuffer, storagePath);
   }
 
   async downloadFile(storagePath: string): Promise<Buffer> {

@@ -12,6 +12,7 @@ import { StorageModule } from '@/modules/storage/storage.module';
 import { FilesModule } from '@/modules/files/files.module';
 import { UsersModule } from '@/modules/users/users.module';
 import * as fs from 'fs';
+import { QueueModule } from '@/modules/queue/queue.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import * as fs from 'fs';
     StorageModule, // For file storage operations
     FilesModule, // For file metadata management
     UsersModule, // For user storage quota management
+    QueueModule,
   ],
 
   controllers: [UploadController], // HTTP upload endpoints

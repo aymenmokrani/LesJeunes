@@ -10,6 +10,9 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import * as crypto from 'crypto';
+import { Readable } from 'stream';
+import { TempStorageService } from '@/modules/storage/providers/temp-storage.service';
+import { QueueService } from '@/modules/queue/queue.service';
 
 @Injectable()
 export class UploadService {
@@ -19,6 +22,8 @@ export class UploadService {
     private readonly storageService: StorageService,
     private readonly filesService: FilesService,
     private readonly usersService: UsersService,
+    private readonly tempStorageService: TempStorageService,
+    private readonly queueService: QueueService,
   ) {}
 
   async uploadSingleFile(
@@ -54,11 +59,16 @@ export class UploadService {
       // Read file buffer (if stored on disk) or use memory buffer
       const fileBuffer = file.buffer || (await fs.readFile(file.path));
 
-      // Upload to storage provider
-      const uploadedPath = await this.storageService.uploadFile(
-        fileBuffer,
-        storagePath,
+      // Stream file to temp storage instead of direct MinIO upload
+      const tempFilePath = await this.tempStorageService.streamToTempFile(
+        Readable.from(fileBuffer),
       );
+
+      // Queue upload job instead of direct upload
+      await this.queueService.addUploadJob({
+        tempFilePath,
+        storagePath,
+      });
 
       // Create file record in database
       const fileRecord = await this.filesService.createFileRecord(
@@ -67,7 +77,7 @@ export class UploadService {
           fileName: `${fileId}${path.extname(file.originalname)}`,
           mimeType: file.mimetype,
           size: file.size,
-          storagePath: uploadedPath,
+          storagePath: storagePath,
           storageProvider: this.storageService.getProviderInfo().type,
           fileHash,
           folder: uploadDto.folderId
