@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from './useAppDispatch';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useRouter } from 'next/navigation';
-import { checkAuth, clearError, login, logout } from '@/stores/authSlice';
+import { checkAuth, clearError, login, logout } from '@/store/authSlice';
 
 export const useAuth = () => {
   const dispatch = useAppDispatch();

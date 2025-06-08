@@ -10,7 +10,8 @@ import {
   FolderPlus,
   Settings,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { useUpload } from '@/lib/hooks/useUpload';
 
 interface FileManagerHeaderProps {
   viewMode: 'grid' | 'list';
@@ -27,6 +28,9 @@ export function FileManagerHeader({
 }: FileManagerHeaderProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const { isUploading, uploadSingle } = useUpload();
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,6 +46,21 @@ export function FileManagerHeader({
       await createFolder(name.trim());
       setIsCreatingFolder(false);
     }
+  };
+
+  // Handle upload
+  const handleFileSelect = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    console.log('run now single upload');
+
+    await uploadSingle(file);
+  };
+  const triggerUpload = () => {
+    fileInputRef.current?.click();
   };
 
   return (
@@ -93,7 +112,14 @@ export function FileManagerHeader({
           New Folder
         </Button>
 
-        <Button variant="outline" size="sm">
+        <input
+          ref={fileInputRef}
+          type="file"
+          onChange={handleFileSelect}
+          className="hidden"
+          disabled={isUploading}
+        />
+        <Button variant="outline" size="sm" onClick={triggerUpload}>
           <Upload className="h-4 w-4 mr-2" />
           Upload
         </Button>

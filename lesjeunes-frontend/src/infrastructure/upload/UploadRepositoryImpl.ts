@@ -7,7 +7,11 @@ import { IUploadRepository } from '@/domain/upload/IUploadRepository';
 import { uploadApiClient } from '@/infrastructure/upload/uploadApi';
 
 export class UploadRepository implements IUploadRepository {
-  async uploadSingle(file: File, folderId?: number): Promise<UploadedFile> {
+  async uploadSingle(
+    file: File,
+    folderId?: number,
+    onProgress?: (progress: number) => void
+  ): Promise<UploadedFile> {
     // Input validation
     if (!file) {
       throw new Error('File is required');
@@ -25,7 +29,7 @@ export class UploadRepository implements IUploadRepository {
       formData.append('folderId', folderId.toString());
     }
 
-    const dto = await uploadApiClient.single(formData);
+    const dto = await uploadApiClient.single(formData, onProgress);
 
     // Transform API response to domain entity
     return {

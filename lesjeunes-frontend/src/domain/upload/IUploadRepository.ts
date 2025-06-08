@@ -3,7 +3,11 @@ import { UploadedFile, UploadProgress } from './UploadEntities.entity';
 
 export interface IUploadRepository {
   // Single and multiple file uploads
-  uploadSingle(file: File, folderId?: number): Promise<UploadedFile>;
+  uploadSingle(
+    file: File,
+    folderId?: number,
+    onProgress?: (progress: number) => void
+  ): Promise<UploadedFile>;
   uploadMultiple(files: File[], folderId?: number): Promise<UploadedFile[]>;
 
   // Specialized uploads

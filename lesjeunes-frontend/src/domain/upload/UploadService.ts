@@ -8,7 +8,11 @@ import { IUploadRepository } from '@/domain/upload/IUploadRepository';
 export class UploadService {
   constructor(private uploadRepository: IUploadRepository) {}
 
-  async uploadSingle(file: File, folderId?: number): Promise<UploadedFile> {
+  async uploadSingle(
+    file: File,
+    folderId?: number,
+    onProgress?: (progress: number) => void
+  ): Promise<UploadedFile> {
     try {
       // Business validation
       if (!file) {
@@ -17,15 +21,20 @@ export class UploadService {
       if (file.size === 0) {
         throw new Error('Cannot upload an empty file');
       }
-      if (file.size > 100 * 1024 * 1024) {
+      //TODO: set file size limit here
+      /*if (file.size > 100 * 1024 * 1024) {
         // 100MB limit
         throw new Error('File size cannot exceed 100MB');
-      }
+      }*/
       if (folderId !== undefined && folderId <= 0) {
         throw new Error('Please select a valid folder');
       }
 
-      return await this.uploadRepository.uploadSingle(file, folderId);
+      return await this.uploadRepository.uploadSingle(
+        file,
+        folderId,
+        onProgress
+      );
     } catch (error: unknown) {
       const apiError = error as { status?: number; message?: string };
 

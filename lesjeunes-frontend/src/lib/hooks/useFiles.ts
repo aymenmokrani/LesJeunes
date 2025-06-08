@@ -16,7 +16,7 @@ import {
   clearSelection,
   setViewMode,
   clearSearchResults,
-} from '@/stores/filesSlice';
+} from '@/store/filesSlice';
 
 export const useFiles = (currentFolderId?: number) => {
   const dispatch = useAppDispatch();

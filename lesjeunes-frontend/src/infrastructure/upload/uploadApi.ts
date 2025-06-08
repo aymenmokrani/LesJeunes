@@ -5,8 +5,11 @@ import { ENDPOINTS } from '@/lib/constants/endpoints';
 import type { UploadResponse, UploadProgressResponse } from './dto';
 
 class UploadApiClient {
-  async single(formData: FormData): Promise<UploadResponse> {
-    return apiClient.upload(ENDPOINTS.UPLOAD.SINGLE, formData);
+  async single(
+    formData: FormData,
+    onProgress?: (progress: number) => void
+  ): Promise<UploadResponse> {
+    return apiClient.upload(ENDPOINTS.UPLOAD.SINGLE, formData, onProgress);
   }
 
   async multiple(formData: FormData): Promise<UploadResponse[]> {
