@@ -48,6 +48,12 @@ export class UpdateFileDto {
   size?: number; // File size in bytes
 
   @IsOptional()
+  @IsEnum(['present', 'processing'], {
+    message: 'File status must be ready or processing',
+  })
+  status?: 'present' | 'processing'; // File processing status
+
+  @IsOptional()
   @IsString({ message: 'File hash must be a string' })
   fileHash?: string; // File hash for integrity
 

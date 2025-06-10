@@ -30,6 +30,9 @@ export class File {
   @Column('bigint')
   size: number; // File size in bytes
 
+  @Column({ type: 'enum', enum: ['present', 'processing'] })
+  status: 'present' | 'processing';
+
   // Storage information
   @Column()
   storagePath: string; // Path where file is stored: "users/123/files/abc-123.jpg"

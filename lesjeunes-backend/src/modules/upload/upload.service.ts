@@ -55,12 +55,6 @@ export class UploadService {
         fileId,
       );
 
-      // Queue upload job instead of direct upload
-      await this.queueService.addUploadJob({
-        tempFilePath: file.path,
-        storagePath,
-      });
-
       // Create file record in database
       const fileRecord = await this.filesService.createFileRecord(
         {
@@ -68,6 +62,7 @@ export class UploadService {
           fileName: `${fileId}${path.extname(file.originalname)}`,
           mimeType: file.mimetype,
           size: file.size,
+          status: 'processing',
           storagePath: storagePath,
           storageProvider: this.storageService.getProviderInfo().type,
           fileHash,
@@ -80,10 +75,13 @@ export class UploadService {
         user,
       );
 
-      // Update user storage usage
-      await this.usersService.updateStorageUsage(user.id, file.size);
+      // Queue upload job instead of direct upload
+      await this.queueService.addUploadJob({
+        tempFilePath: file.path,
+        file: fileRecord,
+        user,
+      });
 
-      this.logger.log(`Upload completed successfully: ${fileRecord.id}`);
       return fileRecord;
     } catch (error) {
       // Clean up temporary file on error

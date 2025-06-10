@@ -32,10 +32,24 @@ export class User {
   refreshTokens: string[]; // Store refresh tokens
 
   // Storage settings
-  @Column({ type: 'bigint', default: 5368709120 }) // 5GB default
+  @Column({
+    type: 'bigint',
+    default: 5368709120,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseInt(value, 10),
+    },
+  }) // 5GB default
   storageQuota: number; // Storage limit in bytes
 
-  @Column({ type: 'bigint', default: 0 })
+  @Column({
+    type: 'bigint',
+    default: 0,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseInt(value, 10),
+    },
+  })
   storageUsed: number; // Current storage usage
 
   // File relationships

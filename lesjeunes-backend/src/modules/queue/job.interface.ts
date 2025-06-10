@@ -1,7 +1,11 @@
+import { User } from '@/modules/users/entities/user.entity';
+import { File } from '@/modules/files/entities/file.entity';
+
 export interface UploadJob {
   jobId: string;
   tempFilePath: string;
-  storagePath: string;
+  file: File;
+  user: User;
 }
 
 export interface JobResponse {
