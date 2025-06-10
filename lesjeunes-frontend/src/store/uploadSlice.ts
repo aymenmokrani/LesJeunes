@@ -20,7 +20,6 @@ const uploadService = new UploadService(uploadRepository);
 // State interface
 interface UploadState {
   uploads: Record<string, UploadProgress>;
-  completedFiles: UploadedFile[];
   isUploading: boolean;
   error: string | null;
 }
@@ -28,7 +27,6 @@ interface UploadState {
 // Initial state
 const initialState: UploadState = {
   uploads: {},
-  completedFiles: [],
   isUploading: false,
   error: null,
 };
@@ -129,153 +127,6 @@ export const uploadMultipleFiles = createAsyncThunk(
   }
 );
 
-export const uploadImage = createAsyncThunk(
-  'upload/uploadImage',
-  async (
-    { file, folderId }: { file: File; folderId?: number },
-    { dispatch, rejectWithValue }
-  ) => {
-    try {
-      const uploadId = generateUploadId(file);
-
-      dispatch(
-        initializeUpload({
-          uploadId,
-          fileName: file.name,
-          totalSize: file.size,
-          folderId,
-        })
-      );
-
-      dispatch(updateUploadStatus({ uploadId, status: 'uploading' }));
-
-      const result = await uploadService.uploadImage(file, folderId);
-
-      dispatch(completeUpload({ uploadId, file: result }));
-
-      return { uploadId, file: result };
-    } catch (error: any) {
-      const uploadId = generateUploadId(file);
-      dispatch(
-        failUpload({
-          uploadId,
-          error: error.message || 'Image upload failed',
-        })
-      );
-      return rejectWithValue(error.message || 'Image upload failed');
-    }
-  }
-);
-
-export const uploadDocument = createAsyncThunk(
-  'upload/uploadDocument',
-  async (
-    { file, folderId }: { file: File; folderId?: number },
-    { dispatch, rejectWithValue }
-  ) => {
-    try {
-      const uploadId = generateUploadId(file);
-
-      dispatch(
-        initializeUpload({
-          uploadId,
-          fileName: file.name,
-          totalSize: file.size,
-          folderId,
-        })
-      );
-
-      dispatch(updateUploadStatus({ uploadId, status: 'uploading' }));
-
-      const result = await uploadService.uploadDocument(file, folderId);
-
-      dispatch(completeUpload({ uploadId, file: result }));
-
-      return { uploadId, file: result };
-    } catch (error: any) {
-      const uploadId = generateUploadId(file);
-      dispatch(
-        failUpload({
-          uploadId,
-          error: error.message || 'Document upload failed',
-        })
-      );
-      return rejectWithValue(error.message || 'Document upload failed');
-    }
-  }
-);
-
-export const uploadAvatar = createAsyncThunk(
-  'upload/uploadAvatar',
-  async ({ file }: { file: File }, { dispatch, rejectWithValue }) => {
-    try {
-      const uploadId = generateUploadId(file);
-
-      dispatch(
-        initializeUpload({
-          uploadId,
-          fileName: file.name,
-          totalSize: file.size,
-        })
-      );
-
-      dispatch(updateUploadStatus({ uploadId, status: 'uploading' }));
-
-      const result = await uploadService.uploadAvatar(file);
-
-      dispatch(completeUpload({ uploadId, file: result }));
-
-      return { uploadId, file: result };
-    } catch (error: any) {
-      const uploadId = generateUploadId(file);
-      dispatch(
-        failUpload({
-          uploadId,
-          error: error.message || 'Avatar upload failed',
-        })
-      );
-      return rejectWithValue(error.message || 'Avatar upload failed');
-    }
-  }
-);
-
-export const replaceFile = createAsyncThunk(
-  'upload/replaceFile',
-  async (
-    { id, file }: { id: number; file: File },
-    { dispatch, rejectWithValue }
-  ) => {
-    try {
-      const uploadId = generateUploadId(file);
-
-      dispatch(
-        initializeUpload({
-          uploadId,
-          fileName: file.name,
-          totalSize: file.size,
-        })
-      );
-
-      dispatch(updateUploadStatus({ uploadId, status: 'uploading' }));
-
-      const result = await uploadService.replaceFile(id, file);
-
-      dispatch(completeUpload({ uploadId, file: result }));
-
-      return { uploadId, file: result };
-    } catch (error: any) {
-      const uploadId = generateUploadId(file);
-      dispatch(
-        failUpload({
-          uploadId,
-          error: error.message || 'File replacement failed',
-        })
-      );
-      return rejectWithValue(error.message || 'File replacement failed');
-    }
-  }
-);
-
 // Upload slice
 const uploadSlice = createSlice({
   name: 'upload',
@@ -345,7 +196,7 @@ const uploadSlice = createSlice({
         file: UploadedFile;
       }>
     ) => {
-      const { uploadId, file } = action.payload;
+      const { uploadId } = action.payload;
       const upload = state.uploads[uploadId];
       if (upload) {
         upload.status = 'complete';
@@ -353,12 +204,6 @@ const uploadSlice = createSlice({
         upload.uploadedSize = upload.totalSize;
         upload.isComplete = true;
         upload.completedAt = new Date().toISOString();
-
-        // Add to completed files
-        state.completedFiles.push(file);
-
-        // Remove from active uploads after a delay (handled by component)
-        // delete state.uploads[uploadId];
       }
 
       // Check if all uploads are complete
@@ -377,7 +222,6 @@ const uploadSlice = createSlice({
     ) => {
       const { uploadId, error } = action.payload;
       const upload = state.uploads[uploadId];
-      console.log('fail upload ::: ', uploadId);
       if (upload) {
         upload.status = 'error';
         upload.error = error;
@@ -417,21 +261,6 @@ const uploadSlice = createSlice({
       });
       state.uploads = activeUploads;
     },
-
-    clearAllUploads: (state) => {
-      state.uploads = {};
-      state.isUploading = false;
-    },
-
-    clearUploadError: (state) => {
-      state.error = null;
-    },
-
-    removeCompletedFile: (state, action: PayloadAction<{ fileId: number }>) => {
-      state.completedFiles = state.completedFiles.filter(
-        (file) => file.id !== action.payload.fileId
-      );
-    },
   },
 });
 
@@ -444,9 +273,6 @@ export const {
   failUpload,
   cancelUpload,
   clearCompletedUploads,
-  clearAllUploads,
-  clearUploadError,
-  removeCompletedFile,
 } = uploadSlice.actions;
 
 // Export reducer
@@ -455,21 +281,16 @@ export default uploadSlice.reducer;
 // Selectors
 export const selectUploads = (state: { upload: UploadState }) =>
   state.upload.uploads;
-export const selectCompletedFiles = (state: { upload: UploadState }) =>
-  state.upload.completedFiles;
 export const selectIsUploading = (state: { upload: UploadState }) =>
   state.upload.isUploading;
 export const selectUploadError = (state: { upload: UploadState }) =>
   state.upload.error;
-export const selectUploadById =
-  (uploadId: string) => (state: { upload: UploadState }) =>
-    state.upload.uploads[uploadId];
 export const selectActiveUploads = createSelector([selectUploads], (uploads) =>
   Object.values(uploads).filter(
     (upload) => upload.status === 'uploading' || upload.status === 'pending'
   )
 );
-export const selectUploadProgress = (state: { upload: UploadState }) => {
+export const selectTotalUploadProgress = (state: { upload: UploadState }) => {
   const uploads = Object.values(state.upload.uploads);
   if (uploads.length === 0) return 0;
 

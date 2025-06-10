@@ -3,11 +3,7 @@ import { Module } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
 import { UploadController } from './upload.controller';
 import { UploadService } from './upload.service';
-import {
-  FileValidationInterceptor,
-  ImageValidationInterceptor,
-  DocumentValidationInterceptor,
-} from './interceptors/file-validation.interceptor';
+import { FileValidationInterceptor } from './interceptors/file-validation.interceptor';
 import { StorageModule } from '@/modules/storage/storage.module';
 import { FilesModule } from '@/modules/files/files.module';
 import { UsersModule } from '@/modules/users/users.module';
@@ -47,8 +43,6 @@ import { QueueModule } from '@/modules/queue/queue.module';
   providers: [
     UploadService, // Upload processing business logic
     FileValidationInterceptor, // File validation interceptor
-    ImageValidationInterceptor, // Image-specific validation
-    DocumentValidationInterceptor, // Document-specific validation
   ],
 
   exports: [

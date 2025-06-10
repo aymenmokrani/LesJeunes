@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from './useAppDispatch';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useRouter } from 'next/navigation';
-import { checkAuth, clearError, login, logout } from '@/store/authSlice';
+import { clearError, login, logout } from '@/store/authSlice';
 
 export const useAuth = () => {
   const dispatch = useAppDispatch();
@@ -10,11 +10,6 @@ export const useAuth = () => {
   const { user, isAuthenticated, isLoading, error } = useAppSelector(
     (state) => state.auth
   );
-
-  // Check auth on app boot
-  useEffect(() => {
-    dispatch(checkAuth());
-  }, [dispatch]);
 
   // Handle routing based on auth state
   useEffect(() => {

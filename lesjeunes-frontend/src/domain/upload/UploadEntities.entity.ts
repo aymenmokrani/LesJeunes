@@ -23,8 +23,6 @@ export interface UploadProgress {
   uploadedSize: number;
   progress: number; // Percentage (0-100)
   status: 'pending' | 'uploading' | 'complete' | 'error' | 'cancelled';
-  estimatedTimeRemaining?: number; // Seconds
-  uploadSpeed?: number; // Bytes per second
   isComplete: boolean;
   error?: string;
 

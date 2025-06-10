@@ -3,7 +3,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { StorageProvider } from '@/modules/storage/interfaces/storage.interface';
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { existsSync } from 'fs';
+import { createWriteStream, existsSync } from 'fs';
+import { pipeline } from 'stream/promises';
 
 @Injectable()
 export class LocalStorageService implements StorageProvider {
@@ -32,6 +33,29 @@ export class LocalStorageService implements StorageProvider {
     } catch (error) {
       this.logger.error(`Failed to upload file: ${storagePath}`, error);
       throw new Error(`Upload failed: ${error.message}`);
+    }
+  }
+
+  async uploadStream(
+    stream: import('stream').Readable,
+    storagePath: string,
+  ): Promise<string> {
+    const fullPath = path.join(this.baseStoragePath, storagePath);
+    const directory = path.dirname(fullPath);
+
+    try {
+      // Ensure directory exists
+      await fs.mkdir(directory, { recursive: true });
+
+      // Create write stream and pipe the readable stream to it
+      const writeStream = createWriteStream(fullPath);
+      await pipeline(stream, writeStream);
+
+      this.logger.log(`File stream uploaded successfully: ${storagePath}`);
+      return storagePath;
+    } catch (error) {
+      this.logger.error(`Failed to upload file stream: ${storagePath}`, error);
+      throw new Error(`Stream upload failed: ${error.message}`);
     }
   }
 

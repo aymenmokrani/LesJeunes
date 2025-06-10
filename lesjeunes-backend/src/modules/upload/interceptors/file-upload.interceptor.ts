@@ -93,31 +93,3 @@ export const MultipleFilesUploadInterceptor = (
 
   return FilesInterceptor(fieldName, maxCount, multerOptions);
 };
-
-// Memory storage interceptor for direct processing
-export const MemoryFileUploadInterceptor = (fieldName: string = 'file') => {
-  const multerOptions: MulterOptions = {
-    storage: 'memory', // Store in memory for direct processing
-    limits: {
-      fileSize: parseInt(process.env.MAX_FILE_SIZE) || 50 * 1024 * 1024,
-      files: 1,
-    },
-    fileFilter: (req, file, cb) => {
-      const allowedMimes = [
-        'image/jpeg',
-        'image/png',
-        'image/gif',
-        'application/pdf',
-        'text/plain',
-      ];
-
-      if (allowedMimes.includes(file.mimetype)) {
-        cb(null, true);
-      } else {
-        cb(new Error(`File type ${file.mimetype} not allowed`), false);
-      }
-    },
-  };
-
-  return FileInterceptor(fieldName, multerOptions);
-};

@@ -14,26 +14,26 @@ export class StorageService {
 
   // Public API methods that delegate to the active provider
   async uploadFile(
-    file: Buffer | NodeJS.ReadableStream,
+    file: Buffer | NodeJS.ReadableStream | File | Blob,
     storagePath: string,
   ): Promise<string> {
     this.logger.log(`Uploading file: ${storagePath}`);
-    let fileBuffer: Buffer;
 
     if (file instanceof Buffer) {
-      fileBuffer = file;
-    } else {
-      // Convert stream to buffer
-      const chunks: Buffer[] = [];
-      for await (const chunk of file) {
-        const buffer = Buffer.isBuffer(chunk)
-          ? chunk
-          : Buffer.from(chunk as any);
-        chunks.push(buffer);
-      }
-      fileBuffer = Buffer.concat(chunks);
+      return this.provider.upload(file, storagePath);
     }
-    return this.provider.upload(fileBuffer, storagePath);
+
+    if (file instanceof File || file instanceof Blob) {
+      // Convert to buffer or stream
+      const buffer = Buffer.from(await file.arrayBuffer());
+      return this.provider.upload(buffer, storagePath);
+    }
+
+    // Assume it's a ReadableStream
+    return this.provider.uploadStream(
+      file as import('stream').Readable,
+      storagePath,
+    );
   }
 
   async downloadFile(storagePath: string): Promise<Buffer> {
@@ -48,28 +48,6 @@ export class StorageService {
 
   async fileExists(storagePath: string): Promise<boolean> {
     return this.provider.exists(storagePath);
-  }
-
-  async getFileSize(storagePath: string): Promise<number> {
-    return this.provider.getSize(storagePath);
-  }
-
-  async getFileMetadata(storagePath: string): Promise<{
-    size: number;
-    lastModified: Date;
-    contentType?: string;
-  }> {
-    return this.provider.getMetadata(storagePath);
-  }
-
-  async getPublicUrl(
-    storagePath: string,
-    expiresIn?: number,
-  ): Promise<string | null> {
-    if (this.provider.getPublicUrl) {
-      return this.provider.getPublicUrl(storagePath, expiresIn);
-    }
-    return null;
   }
 
   // Helper method to generate unique storage paths

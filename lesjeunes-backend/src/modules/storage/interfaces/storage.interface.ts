@@ -9,6 +9,17 @@ export interface StorageProvider {
   upload(file: Buffer, path: string): Promise<string>;
 
   /**
+   * Upload a file stream to storage
+   * @param stream - Readable stream to upload
+   * @param path - Storage path (e.g., 'users/123/files/abc-def.jpg')
+   * @returns Promise resolving to the stored file path
+   */
+  uploadStream(
+    stream: import('stream').Readable,
+    path: string,
+  ): Promise<string>;
+
+  /**
    * Download a file from storage
    * @param path - Storage path of the file
    * @returns Promise resolving to file buffer

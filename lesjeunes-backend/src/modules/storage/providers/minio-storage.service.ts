@@ -43,6 +43,23 @@ export class MinioStorageService implements StorageProvider, OnModuleInit {
     }
   }
 
+  async uploadStream(
+    stream: import('stream').Readable,
+    path: string,
+  ): Promise<string> {
+    try {
+      await this.minioClient.putObject(this.bucketName, path, stream);
+      this.logger.log(`File stream uploaded successfully to MinIO: ${path}`);
+      return path;
+    } catch (error) {
+      this.logger.error(
+        `Failed to upload file stream to MinIO: ${path}`,
+        error,
+      );
+      throw new Error(`MinIO stream upload failed: ${error.message}`);
+    }
+  }
+
   async download(storagePath: string): Promise<Buffer> {
     try {
       const stream = await this.minioClient.getObject(

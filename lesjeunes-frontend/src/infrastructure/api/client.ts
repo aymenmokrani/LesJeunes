@@ -152,6 +152,7 @@ class ApiClient {
     onProgress?: (progress: number) => void
   ): Promise<T> {
     const response = await this.client.post<T>(url, formData, {
+      timeout: 300000, // 5 minutes for large files
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -209,6 +210,7 @@ class ApiClient {
     } else if (error.request) {
       // Network error
       apiError.message = 'Network error - please check your connection';
+      apiError.details = error.message;
       apiError.code = 'NETWORK_ERROR';
       apiError.status = 0;
     } else {
